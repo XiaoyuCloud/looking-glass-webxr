@@ -52,6 +52,12 @@ export default defineConfig(({ mode }) => {
 	// if build, build the normal non-bundled version of the library. This is the version installed from npm
 	else if (mode === "build") {
 		return {
+			resolve: {
+				alias: {
+				  '@': '/src',
+				  'three': 'path/to/three.module.js'
+				}
+			  },
 			publicDir: false,
 			build: {
 				minify: true,
