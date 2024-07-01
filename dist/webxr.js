@@ -343,9 +343,9 @@ async function ge() {
   async function e() {
     if (t.appCanvas != null)
       try {
-        t.capturing = !0, await new Promise((c) => {
+        t.capturing = !0, console.timeLog("LookingGlass", "Capturing screenshot"), await new Promise((c) => {
           requestAnimationFrame(c);
-        }), t.appCanvas.width = t.quiltResolution, t.appCanvas.height = t.quiltResolution;
+        }), console.timeLog("LookingGlass", "Screenshot captured"), t.appCanvas.width = t.quiltResolution, t.appCanvas.height = t.quiltResolution;
         let i = t.appCanvas.toDataURL();
         const l = document.createElement("a");
         l.style.display = "none", l.href = i, l.download = `hologram_qs${t.quiltWidth}x${t.quiltHeight}a${t.aspect}.png`, document.body.appendChild(l), l.click(), document.body.removeChild(l), window.URL.revokeObjectURL(i);
