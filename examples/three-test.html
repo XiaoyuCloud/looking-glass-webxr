@@ -20,8 +20,6 @@
 			import { LookingGlassWebXRPolyfill } from "../dist/bundle/webxr.js"
 
 			LookingGlassWebXRPolyfill.init({
-				tileHeight: 512,
-				numViews: 45,
 				targetY: 1,
 				targetZ: 0,
 				targetDiam: 3,
@@ -34,6 +32,8 @@
 			cube.position.set(0, 1.3, 0)
 			scene.add(cube)
 			scene.add(new THREE.GridHelper())
+
+			scene.background = new THREE.Color(0x505050)
 
 			scene.add(new THREE.AmbientLight(0xaaaaaa))
 			const directionalLight = new THREE.DirectionalLight(0xffffff)

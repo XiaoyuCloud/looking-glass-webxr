@@ -29,13 +29,13 @@ export const moveCanvasToWindow = (enabled: boolean, onbeforeunload) => {
 	cfg.lkgCanvas.height = cfg.calibration.screenH.value
 
 	document.body.appendChild(controls)
-	const screenPlacement = "getScreenDetails" in window
-	console.log(screenPlacement, 'Screen placement API exists')
+	const screenManagement = "getScreenDetails" in window
+	console.log(screenManagement, 'Screen placement API exists')
 	try {
 	} catch {
 		console.log("user did not allow window placement, using normal popup instead")
 	}
-	if (screenPlacement) {
+	if (screenManagement) {
 		// use chrome's screen placement to automatically position the window.
 		placeWindow(cfg.lkgCanvas, cfg, onbeforeunload)
 	} else {
@@ -58,7 +58,6 @@ export const moveCanvasToWindow = (enabled: boolean, onbeforeunload) => {
 			return
 		}
 		else {
-		console.log("monitor ID", LKG.label, "serial number", config.calibration)
 		const features = [
 			`left=${LKG.left}`,
 			`top=${LKG.top}`,

@@ -3,5 +3,6 @@
 	"useTabs": true,
 	"tabWidth": 2,
 	"bracketSameLine": true,
-	"printWidth": 150
+	"printWidth": 150,
+	"trailingComma": "all"
 }

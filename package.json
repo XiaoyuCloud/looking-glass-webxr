@@ -12,7 +12,7 @@
       "require": "./dist/webxr.umd.cjs"
     }
   },
-  "version": "0.4.0",
+  "version": "0.6.0",
   "license": "Apache-2.0",
   "private": false,
   "description": "Official WebXR implementation for Looking Glass Holographic Displays.",
@@ -41,7 +41,7 @@
   "dependencies": {
     "@lookingglass/webxr-polyfill": "^0.1.1",
     "gl-matrix": "^2.8.1",
-    "holoplay-core": "^0.0.9"
+    "holoplay-core": "^0.0.11"
   },
   "bugs": {
     "url": "https://github.com/Looking-Glass/looking-glass-webxr/issues"

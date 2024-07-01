@@ -22,6 +22,15 @@ type Value = {
 	value: number
 }
 
+type SubpixelCell = {
+		BOffsetX: number,
+		BOffsetY: number,
+		GOffsetX: number,
+		GOffsetY: number,
+		ROffsetX: number,
+		ROffsetY: number,
+}
+
 export type CalibrationArgs = {
 	configVersion: string
 	pitch: Value
@@ -37,6 +46,8 @@ export type CalibrationArgs = {
 	flipImageY: Value
 	flipSubp: Value
 	serial: string
+	subpixelCells: SubpixelCell[],
+	CellPatternMode: Value,
 }
 
 export enum InlineView {
@@ -124,7 +135,7 @@ export type ViewControlArgs = {
 	 * @default 3840
 	 * 
 	 */
-	quiltResolution: number
+	quiltResolution: number | null
 	/**
 	 * The Canvas on the Looking Glass
 	 * @default null
@@ -135,6 +146,12 @@ export type ViewControlArgs = {
 	 * @default null
 	 */
 	appCanvas: HTMLCanvasElement | null
+	/**subpixelMode */
+	subpixelMode: number
+	/**filterMode */
+	filterMode: number
+	/**gaussian sigma */
+	gaussianSigma: number
 }
 
 type LookingGlassConfigEvent = "on-config-changed"
@@ -150,12 +167,14 @@ export class LookingGlassConfig extends EventTarget {
 		invView: { value: 1 },
 		verticalAngle: { value: 0 },
 		DPI: { value: 338 },
-		screenW: { value: 250 },
-		screenH: { value: 250 },
+		screenW: { value: 3840 },
+		screenH: { value: 2160 },
 		flipImageX: { value: 0 },
 		flipImageY: { value: 0 },
 		flipSubp: { value: 0 },
-		serial: "LKG-DEFAULT-#####"
+		serial: "LKG-DEFAULT-#####",
+		subpixelCells: [],
+		CellPatternMode: {value: 0},
 	}
 
 	// Config defaults
@@ -172,11 +191,14 @@ export class LookingGlassConfig extends EventTarget {
 		depthiness: 1.25,
 		inlineView: InlineView.Center,
 		capturing: false,
-		quiltResolution: 3840,
+		quiltResolution: null,
 		popup: null, 
 		XRSession: null,
 		lkgCanvas: null, 
-		appCanvas: null
+		appCanvas: null,
+		subpixelMode: 1.0,
+		filterMode: 2,
+		gaussianSigma: 0.02
 	}
 	LookingGlassDetected: any
 
@@ -245,11 +267,43 @@ export class LookingGlassConfig extends EventTarget {
 	}
 
 	/**
-	 * defines the quilt resolution, only change this at start, do not change this after an XRSession has started
+	 * defines the quilt resolution, if null, it will be set based on the connected device
 	 */
 
     public get quiltResolution(): number {
-		return this._viewControls.quiltResolution
+		if (this._viewControls.quiltResolution == null) {
+			const serial = this._calibration.serial
+			switch (true) {
+				case serial.startsWith("LKG-2K"): // Looking Glass 8.9"
+					return 4096
+				case serial.startsWith("LKG-4K"): // Looking Glass 15.6"
+					return 4096
+				case serial.startsWith("LKG-8K"): // Looking Glass 32"
+					return 8192
+				case serial.startsWith("LKG-P"): // Looking Glass Portrait
+					return 3360
+				case serial.startsWith("LKG-A"): // Looking Glass 16" Gen 2
+					return 4096
+				case serial.startsWith("LKG-B"): // Looking Glass 32" Gen 2
+					return 8192
+				case serial.startsWith("LKG-F"): // Looking Glass Kiosk
+					return 3360
+				case serial.startsWith("LKG-E"): // Looking Glass Go
+					return 3840
+				case serial.startsWith("LKG-H"): // Looking Glass 16" Spatial OLED (Portrait)
+					return 5995
+				case serial.startsWith("LKG-J"): // Looking Glass 16" Spatial OLED (Landscape)
+					return 5999
+				case serial.startsWith("LKG-K"): // Looking Glass 32" Spatial Display (Portrait)
+					return 8184
+				case serial.startsWith("LKG-L"): // Looking Glass 32" Spatial Display (Landscape)
+					return 8190
+				default: 
+					return 4096
+		}
+		} else {
+			return this._viewControls.quiltResolution
+		}
 	}
 
 	set quiltResolution(v: number) {
@@ -370,6 +424,30 @@ export class LookingGlassConfig extends EventTarget {
 		this.updateViewControls({ capturing: v })
 	}
 
+	get subpixelMode() {
+		return this._viewControls.subpixelMode
+	}
+
+	set subpixelMode(v) {
+		 this.updateViewControls({ subpixelMode: v})
+	}
+
+	get filterMode() {
+		return this._viewControls.filterMode
+	}
+
+	set filterMode(v) {
+		this.updateViewControls({filterMode: v})
+	}
+
+	get gaussianSigma() {
+		return this._viewControls.gaussianSigma
+	}
+
+	set gaussianSigma(v) {
+		this.updateViewControls({gaussianSigma: v})
+	}
+
 	get popup() {
 		return this._viewControls.popup
 	}
@@ -413,46 +491,77 @@ export class LookingGlassConfig extends EventTarget {
 	}
 
 	public get framebufferWidth() {
-		if (this._calibration.screenW.value < 7000) return this._viewControls.quiltResolution
-		else return 7680
+		return this.quiltResolution
+		
 	}
 
 	// number of columns
 	public get quiltWidth() {
-		if (this.calibration.screenW.value == 1536) {
-			return 8
-		}
-		else if (this.calibration.screenW.value == 3840) {
-			return 5
+		//use serial number to determine quilt width
+		const serial = this._calibration.serial
+		switch (true) {
+			case serial.startsWith("LKG-2K"): // Looking Glass 8.9"
+				return 5
+			case serial.startsWith("LKG-4K"): // Looking Glass 15.6"
+				return 5
+			case serial.startsWith("LKG-8K"): // Looking Glass 32"
+				return 5
+			case serial.startsWith("LKG-P"): // Looking Glass Portrait
+				return 8
+			case serial.startsWith("LKG-A"): // Looking Glass 16" Gen 2
+				return 5
+			case serial.startsWith("LKG-B"): // Looking Glass 32" Gen 2
+				return 5
+			case serial.startsWith("LKG-F"): // Looking Glass Kiosk
+				return 8
+			case serial.startsWith("LKG-E"): // Looking Glass Go
+				return 11
+			case serial.startsWith("LKG-H"): // Looking Glass 16" Spatial OLED (Portrait)
+				return 11
+			case serial.startsWith("LKG-J"): // Looking Glass 16" Spatial OLED (Landscape)
+				return 7
+			case serial.startsWith("LKG-K"): // Looking Glass 32" Spatial Display (Portrait)
+				return 11
+			case serial.startsWith("LKG-L"): // Looking Glass 32" Spatial Display (Landscape)
+				return 7
+			default: 
+				return 5
+	}}
 
-		}
-		else if (this.calibration.screenW.value > 7000) {
-			return 5
-		}
-		else {
-			return 8
-		}
-	}
-
+	// number of rows
 	public get quiltHeight() {
-		if (this.calibration.screenW.value == 1536) {
-			return 6
-		}
-		else if (this.calibration.screenW.value == 3840) {
-			return 9
-
-		}
-		else if (this.calibration.screenW.value > 7000) {
-			return 9
-		}
-		else {
-			return 6
-		}
-	}
+		const serial = this._calibration.serial
+		switch (true) {
+			case serial.startsWith("LKG-2K"): // Looking Glass 8.9"
+				return 9
+			case serial.startsWith("LKG-4K"): // Looking Glass 15.6"
+				return 9
+			case serial.startsWith("LKG-8K"): // Looking Glass 32"
+				return 9
+			case serial.startsWith("LKG-P"): // Looking Glass Portrait
+				return 6
+			case serial.startsWith("LKG-A"): // Looking Glass 16" Gen 2
+				return 9
+			case serial.startsWith("LKG-B"): // Looking Glass 32" Gen 2
+				return 9
+			case serial.startsWith("LKG-F"): // Looking Glass Kiosk
+				return 6
+			case serial.startsWith("LKG-E"): // Looking Glass Go
+				return 6
+			case serial.startsWith("LKG-H"): // Looking Glass 16" Spatial OLED (Portrait)
+				return 6
+			case serial.startsWith("LKG-J"): // Looking Glass 16" Spatial OLED (Landscape)
+				return 7
+			case serial.startsWith("LKG-K"): // Looking Glass 32" Spatial Display (Portrait)
+				return 6
+			case serial.startsWith("LKG-L"): // Looking Glass 32" Spatial Display (Landscape)
+				return 7
+			default: 
+				return 9
+	}}
 
 	public get framebufferHeight() {
-		if (this._calibration.screenW.value < 7000) return this._viewControls.quiltResolution
-		else return 4320
+		return this.quiltResolution
 	}
 
 	public get viewCone() {
@@ -465,18 +574,38 @@ export class LookingGlassConfig extends EventTarget {
 			(this._calibration.flipImageX.value ? -1 : 1)
 		)
 	}
-
-	public set tilt(windowHeight) {
-		windowHeight
-	}
-
+	
 	public get subp() {
-		return 1 / (this._calibration.screenW.value * 3)
+		return 1 / (this._calibration.screenW.value * 3) * (this._calibration.flipImageX.value ? -1 : 1)
+	}
+	
+	public get pitch() {
+		return this._calibration.pitch.value * this._calibration.screenW.value / this._calibration.DPI.value * Math.cos(Math.atan(1.0 / this._calibration.slope.value))
 	}
 
-	public get pitch() {
-		const screenInches = this._calibration.screenW.value / this._calibration.DPI.value
-		return this._calibration.pitch.value * screenInches * Math.cos(Math.atan(1.0 / this._calibration.slope.value))
+	public get subpixelCells() {
+		const subPixelCells = new Float32Array(6 * this._calibration.subpixelCells.length)
+		
+		this._calibration.subpixelCells.forEach((cell, index) => {
+			cell.ROffsetX /= this.calibration.screenW.value
+			cell.ROffsetY /= this.calibration.screenH.value
+			cell.GOffsetX /= this.calibration.screenW.value
+			cell.GOffsetY /= this.calibration.screenH.value
+			cell.BOffsetX /= this.calibration.screenW.value
+			cell.BOffsetY /= this.calibration.screenH.value
+
+			// Populate the subPixelCells Float32Array
+			subPixelCells[index * 6 + 0] = cell.ROffsetX
+			subPixelCells[index * 6 + 1] = cell.ROffsetY
+			subPixelCells[index * 6 + 2] = cell.GOffsetX
+			subPixelCells[index * 6 + 3] = cell.GOffsetY
+			subPixelCells[index * 6 + 4] = cell.BOffsetX
+			subPixelCells[index * 6 + 5] = cell.BOffsetY
+		})
+
+		console.log({subPixelCells})
+
+		return subPixelCells
 	}
 }
 

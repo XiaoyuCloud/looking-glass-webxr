@@ -109,28 +109,28 @@ export default class LookingGlassXRDevice extends XRDevice {
   onFrameStart(sessionId, renderState) {
     const session = this.sessions.get(sessionId);
     const cfg = getLookingGlassConfig();
-
+  
     if (session.immersive) {
       const tanHalfFovy = Math.tan(0.5 * cfg.fovy);
       // Distance from frustum's vertex to target.
       const focalDistance = 0.5 * cfg.targetDiam / tanHalfFovy;
       const clipPlaneBias = focalDistance - cfg.targetDiam;
-
+  
       const mPose = this.basePoseMatrix;
       mat4.fromTranslation(mPose, [cfg.targetX, cfg.targetY, cfg.targetZ]);
       mat4.rotate(mPose, mPose, cfg.trackballX, [0, 1, 0]);
       mat4.rotate(mPose, mPose, -cfg.trackballY, [1, 0, 0]);
       mat4.translate(mPose, mPose, [0, 0, focalDistance]);
-
+  
       for (let i = 0; i < cfg.numViews; ++i) {
         const fractionAlongViewCone = (i + 0.5) / cfg.numViews - 0.5; // -0.5 < this < 0.5
         const tanAngleToThisCamera = Math.tan(cfg.viewCone * fractionAlongViewCone);
         const offsetAlongBaseline = focalDistance * tanAngleToThisCamera;
-
+  
         const mView = (this.LookingGlassInverseViewMatrices[i] = this.LookingGlassInverseViewMatrices[i] || mat4.create());
         mat4.translate(mView, mPose, [offsetAlongBaseline, 0, 0]);
         mat4.invert(mView, mView);
-
+  
         // depthNear/Far are the distances from the view origin to the near/far planes.
         // l/r/t/b/n/f are as in the usual OpenGL perspective matrix formulation.
         const n = Math.max(clipPlaneBias + renderState.depthNear, 0.01);
@@ -147,22 +147,20 @@ export default class LookingGlassXRDevice extends XRDevice {
           (r + l) / (r - l), (t + b) / (t - b), -(f + n) / (f - n), -1,
           0, 0, -2 * f * n / (f - n), 0);
       }
-
+  
       const baseLayerPrivate = session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE];
       baseLayerPrivate.clearFramebuffer();
-      //if session is not immersive, we need to set the projection matrix and view matrix for the inline session 
-      // Note: I think this breaks three.js when the session is ended. We should *try* to grab the camera position before entering the session if possible. 
     } else {
       const gl = session.baseLayer.context;
-
-      // Projection
       const aspect = gl.drawingBufferWidth / gl.drawingBufferHeight;
       mat4.perspective(this.inlineProjectionMatrix, renderState.inlineVerticalFieldOfView, aspect,
         renderState.depthNear, renderState.depthFar);
-
-      // View
+  
       mat4.fromTranslation(this.basePoseMatrix, [0, DefaultEyeHeight, 0]);
       mat4.invert(this.inlineInverseViewMatrix, this.basePoseMatrix);
+      
+      const baseLayerPrivate = session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE];
+      baseLayerPrivate.clearFramebuffer();
     }
   }
 
@@ -192,9 +190,11 @@ export default class LookingGlassXRDevice extends XRDevice {
 
   endSession(sessionId) {
     const session = this.sessions.get(sessionId);
+    // close the window and destroy the controls on the end of session
+    session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE].moveCanvasToWindow(false);
     if (session.immersive && session.baseLayer) {
-      // close the window and destroy the controls on the end of session
-      session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE].moveCanvasToWindow(false);
+      session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE].LookingGlassEnabled = false;
+      session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE].restoreOriginalCanvasDimensions();
       this.dispatchEvent('@@webxr-polyfill/vr-present-end', sessionId);
     }
     session.ended = true;

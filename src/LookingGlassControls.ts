@@ -4,7 +4,6 @@ import { LookingGlassMediaController } from "./LookingGlassMediaController"
 //lkgCanvas is stored in the Looking Glass config after being created. 
 export function initLookingGlassControlGUI() {
 	const cfg = getLookingGlassConfig()
-	console.log(cfg, 'for debugging purposes')
 	if (cfg.lkgCanvas == null) {
 	console.warn('window placement called without a valid XR Session!')
 	}
@@ -194,6 +193,30 @@ export function initLookingGlassControlGUI() {
 				stringify: (v) => (v === 0 ? "swizzled" : v === 1 ? "center" : v === 2 ? "quilt" : "?"),
 			}
 		)
+
+		addControl(
+			"filterMode",
+			{ type: "range", min: 0, max: 3, step: 1 },
+			{
+				label: "view filtering mode",
+				title: "controls the method used for view blending",
+				fixRange: (v) => Math.max(0, Math.min(v, 2)),
+				stringify: (v) => (v === 0 ? "old, studio style" : v === 1 ? "2 view" : v === 2 ? "gaussian" : v === 3 ? "10 view gaussian": "?"),
+			}
+		)
+
+		addControl(
+			"gaussianSigma",
+			{type: "range", min: -1, max: 1, step: 0.02},
+			{
+				label: "gaussian sigma",
+				title: "control view blending",
+				fixRange: (v) => Math.max(-1, Math.min(v, 1)),
+				stringify: (v) => (v)
+			}
+		)
+
+		// Looking Glass window
 	
 		cfg.lkgCanvas.oncontextmenu = (ev) => {
 			ev.preventDefault()
@@ -204,7 +227,7 @@ export function initLookingGlassControlGUI() {
 			const GAMMA = 1.1
 			const logOld = Math.log(old) / Math.log(GAMMA)
 			return (cfg.targetDiam = Math.pow(GAMMA, logOld + ev.deltaY * 0.01))
-		})
+		}, {passive: false})
 	
 		cfg.lkgCanvas.addEventListener("mousemove", (ev) => {
 			const mx = ev.movementX,
@@ -242,6 +265,67 @@ export function initLookingGlassControlGUI() {
 			}
 		})
 		cfg.lkgCanvas.addEventListener("keyup", (ev) => {
+			switch (ev.code) {
+				case "KeyW":
+					keys.w = 0
+					break
+				case "KeyA":
+					keys.a = 0
+					break
+				case "KeyS":
+					keys.s = 0
+					break
+				case "KeyD":
+					keys.d = 0
+					break
+			}
+		})
+
+		// main window canvas
+
+		cfg.appCanvas?.addEventListener("wheel", (ev) => {
+			const old = cfg.targetDiam
+			const GAMMA = 1.1
+			const logOld = Math.log(old) / Math.log(GAMMA)
+			return (cfg.targetDiam = Math.pow(GAMMA, logOld + ev.deltaY * 0.01))
+		}, {passive: false})
+	
+		cfg.appCanvas?.addEventListener("mousemove", (ev) => {
+			const mx = ev.movementX,
+				my = -ev.movementY
+			if (ev.buttons & 2 || (ev.buttons & 1 && (ev.shiftKey || ev.ctrlKey))) {
+				const tx = cfg.trackballX,
+					ty = cfg.trackballY
+				const dx = -Math.cos(tx) * mx + Math.sin(tx) * Math.sin(ty) * my
+				const dy = -Math.cos(ty) * my
+				const dz = Math.sin(tx) * mx + Math.cos(tx) * Math.sin(ty) * my
+				cfg.targetX = cfg.targetX + dx * cfg.targetDiam * 0.001
+				cfg.targetY = cfg.targetY + dy * cfg.targetDiam * 0.001
+				cfg.targetZ = cfg.targetZ + dz * cfg.targetDiam * 0.001
+			} else if (ev.buttons & 1) {
+				cfg.trackballX = cfg.trackballX - mx * 0.01
+				cfg.trackballY = cfg.trackballY - my * 0.01
+			}
+		})
+	
+		cfg.appCanvas?.addEventListener("keydown", (ev) => {
+			switch (ev.code) {
+				case "KeyW":
+					keys.w = 1
+					break
+				case "KeyA":
+					keys.a = 1
+					break
+				case "KeyS":
+					keys.s = 1
+					break
+				case "KeyD":
+					keys.d = 1
+					break
+			}
+		})
+
+		cfg.appCanvas?.addEventListener("keyup", (ev) => {
 			switch (ev.code) {
 				case "KeyW":
 					keys.w = 0
