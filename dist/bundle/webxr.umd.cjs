@@ -7668,11 +7668,9 @@ host this content on a secure origin for the best user experience.
       if (cfg.appCanvas != null) {
         try {
           cfg.capturing = true;
-          console.timeLog("LookingGlass", "Capturing screenshot");
           await new Promise((resolve) => {
             requestAnimationFrame(resolve);
           });
-          console.timeLog("LookingGlass", "Screenshot captured");
           cfg.appCanvas.width = cfg.quiltResolution;
           cfg.appCanvas.height = cfg.quiltResolution;
           let url = cfg.appCanvas.toDataURL();
