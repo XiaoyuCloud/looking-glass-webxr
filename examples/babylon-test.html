@@ -27,29 +27,29 @@
     <div id="app">
 		<script type="module">
 			import { LookingGlassWebXRPolyfill } from "../dist/bundle/webxr.js"
-			import { ArcRotateCamera } from '../node_modules/@babylonjs/core/Cameras/arcRotateCamera.js'
-			import { Color3 } from '../node_modules/@babylonjs/core/Maths/math.color.js'
-			import { Engine } from '../node_modules/@babylonjs/core/Engines/engine.js'
-			import { EnvironmentHelper } from '../node_modules/@babylonjs/core/Helpers/environmentHelper.js'
-			import { HemisphericLight } from '../node_modules/@babylonjs/core/Lights/hemisphericLight.js'
-			import { Mesh } from '../node_modules/@babylonjs/core/Meshes/mesh'
-			import { MeshBuilder } from '../node_modules/@babylonjs/core/Meshes/meshBuilder.js'
-			import { Scene } from '../node_modules/@babylonjs/core/scene.js'
-			import { StandardMaterial } from '../node_modules/@babylonjs/core/Materials/standardMaterial.js'
-			import { Vector3 } from '../node_modules/@babylonjs/core/Maths/math.vector.js'
-			import { WebXRExperienceHelper } from '../node_modules/@babylonjs/core/XR/WebxrExperienceHelper.js'
+			import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera.js'
+			import { Color3 } from '@babylonjs/core/Maths/math.color.js'
+			import { Engine } from '@babylonjs/core/Engines/engine.js'
+			import { EnvironmentHelper } from '@babylonjs/core/Helpers/environmentHelper.js'
+			import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight.js'
+			import { Mesh } from '@babylonjs/core/Meshes/mesh'
+			import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder.js'
+			import { Scene } from '@babylonjs/core/scene.js'
+			import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial.js'
+			import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
+			import { WebXRExperienceHelper } from '@babylonjs/core/XR/WebxrExperienceHelper.js'
 
 			// Required for EnvironmentHelper
-			import '../node_modules/@babylonjs/core/Materials/Textures/Loaders'
+			import '@babylonjs/core/Materials/Textures/Loaders'
 
 			// Enable GLTF/GLB loader for loading controller models from WebXR Input registry
-			import '../node_modules/@babylonjs/loaders/glTF'
+			import '@babylonjs/loaders/glTF'
 
 			// Without this next import, an error message like this occurs loading controller models:
 			//  Build of NodeMaterial failed" error when loading controller model
 			//  Uncaught (in promise) Build of NodeMaterial failed: input rgba from block
 			//  FragmentOutput[FragmentOutputBlock] is not connected and is not optional.
-			import '../node_modules/@babylonjs/core/Materials/Node/Blocks'
+			import '@babylonjs/core/Materials/Node/Blocks'
 
             new LookingGlassWebXRPolyfill({
                 targetY: 1,
