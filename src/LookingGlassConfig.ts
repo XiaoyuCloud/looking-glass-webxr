@@ -603,8 +603,6 @@ export class LookingGlassConfig extends EventTarget {
 			subPixelCells[index * 6 + 5] = cell.BOffsetY
 		})
 
-		console.log({subPixelCells})
-
 		return subPixelCells
 	}
 }
