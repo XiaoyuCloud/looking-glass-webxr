@@ -31,6 +31,7 @@
     "@babylonjs/materials": "^5.43.2",
     "@rollup/plugin-replace": "^5.0.1",
     "@rollup/plugin-typescript": "^9.0.2",
+    "rollup-plugin-license": "^3.5.1",
     "rollup-plugin-typescript-paths": "^1.4.0",
     "three": "^0.146.0",
     "tslib": "^2.4.1",

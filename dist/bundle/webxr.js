@@ -7094,7 +7094,7 @@ class LookingGlassConfig$1 extends EventTarget {
       flipImageX: { value: 0 },
       flipImageY: { value: 0 },
       flipSubp: { value: 0 },
-      serial: "LKG-DEFAULT-#####",
+      serial: "",
       subpixelCells: [],
       CellPatternMode: { value: 0 }
     });
@@ -7107,18 +7107,20 @@ class LookingGlassConfig$1 extends EventTarget {
       targetY: DefaultEyeHeight,
       targetZ: -0.5,
       targetDiam: 2,
-      fovy: 13 / 180 * Math.PI,
+      fovy: 14 / 180 * Math.PI,
       depthiness: 1.25,
       inlineView: InlineView.Center,
       capturing: false,
       quiltResolution: null,
+      columns: null,
+      rows: null,
       popup: null,
       XRSession: null,
       lkgCanvas: null,
       appCanvas: null,
       subpixelMode: 1,
-      filterMode: 2,
-      gaussianSigma: 0.02
+      filterMode: 1,
+      gaussianSigma: 0.01
     });
     __publicField(this, "LookingGlassDetected");
     this._viewControls = { ...this._viewControls, ...cfg };
@@ -7165,38 +7167,40 @@ class LookingGlassConfig$1 extends EventTarget {
     return Math.round(this.framebufferHeight / this.quiltHeight);
   }
   get quiltResolution() {
-    if (this._viewControls.quiltResolution == null) {
+    if (this._viewControls.quiltResolution != null) {
+      return { width: this._viewControls.quiltResolution.width, height: this._viewControls.quiltResolution.height };
+    } else {
       const serial = this._calibration.serial;
       switch (true) {
         case serial.startsWith("LKG-2K"):
-          return 4096;
+          return { width: 4096, height: 4096 };
         case serial.startsWith("LKG-4K"):
-          return 4096;
+          return { width: 4096, height: 4096 };
         case serial.startsWith("LKG-8K"):
-          return 8192;
+          return { width: 8192, height: 8192 };
         case serial.startsWith("LKG-P"):
-          return 3360;
+          return { width: 3360, height: 3360 };
         case serial.startsWith("LKG-A"):
-          return 4096;
+          return { width: 4096, height: 4096 };
         case serial.startsWith("LKG-B"):
-          return 8192;
+          return { width: 8192, height: 8192 };
+        case serial.startsWith("LKG-D"):
+          return { width: 8192, height: 8192 };
         case serial.startsWith("LKG-F"):
-          return 3360;
+          return { width: 3360, height: 3360 };
         case serial.startsWith("LKG-E"):
-          return 3840;
+          return { width: 4092, height: 4092 };
         case serial.startsWith("LKG-H"):
-          return 5995;
+          return { width: 5995, height: 6e3 };
         case serial.startsWith("LKG-J"):
-          return 5999;
+          return { width: 5999, height: 5999 };
         case serial.startsWith("LKG-K"):
-          return 8184;
+          return { width: 8184, height: 8184 };
         case serial.startsWith("LKG-L"):
-          return 8190;
+          return { width: 8190, height: 8190 };
         default:
-          return 4096;
+          return { width: 4096, height: 4096 };
       }
-    } else {
-      return this._viewControls.quiltResolution;
     }
   }
   set quiltResolution(v) {
@@ -7307,6 +7311,18 @@ class LookingGlassConfig$1 extends EventTarget {
   set appCanvas(v) {
     this.updateViewControls({ appCanvas: v });
   }
+  get columns() {
+    return this._viewControls.columns;
+  }
+  set columns(v) {
+    this.updateViewControls({ columns: v });
+  }
+  get rows() {
+    return this._viewControls.rows;
+  }
+  set rows(v) {
+    this.updateViewControls({ rows: v });
+  }
   get aspect() {
     return this._calibration.screenW.value / this._calibration.screenH.value;
   }
@@ -7314,9 +7330,12 @@ class LookingGlassConfig$1 extends EventTarget {
     return Math.round(this.framebufferWidth / this.quiltWidth);
   }
   get framebufferWidth() {
-    return this.quiltResolution;
+    return this.quiltResolution.width;
   }
   get quiltWidth() {
+    if (this._viewControls.columns != null) {
+      return this._viewControls.columns;
+    }
     const serial = this._calibration.serial;
     switch (true) {
       case serial.startsWith("LKG-2K"):
@@ -7331,6 +7350,8 @@ class LookingGlassConfig$1 extends EventTarget {
         return 5;
       case serial.startsWith("LKG-B"):
         return 5;
+      case serial.startsWith("LKG-D"):
+        return 8;
       case serial.startsWith("LKG-F"):
         return 8;
       case serial.startsWith("LKG-E"):
@@ -7344,10 +7365,13 @@ class LookingGlassConfig$1 extends EventTarget {
       case serial.startsWith("LKG-L"):
         return 7;
       default:
-        return 5;
+        return 1;
     }
   }
   get quiltHeight() {
+    if (this._viewControls.columns != null) {
+      return this._viewControls.columns;
+    }
     const serial = this._calibration.serial;
     switch (true) {
       case serial.startsWith("LKG-2K"):
@@ -7362,6 +7386,8 @@ class LookingGlassConfig$1 extends EventTarget {
         return 9;
       case serial.startsWith("LKG-B"):
         return 9;
+      case serial.startsWith("LKG-D"):
+        return 8;
       case serial.startsWith("LKG-F"):
         return 6;
       case serial.startsWith("LKG-E"):
@@ -7375,11 +7401,11 @@ class LookingGlassConfig$1 extends EventTarget {
       case serial.startsWith("LKG-L"):
         return 7;
       default:
-        return 9;
+        return 1;
     }
   }
   get framebufferHeight() {
-    return this.quiltResolution;
+    return this.quiltResolution.height;
   }
   get viewCone() {
     return this._calibration.viewCone.value * this.depthiness / 180 * Math.PI;
@@ -7409,7 +7435,6 @@ class LookingGlassConfig$1 extends EventTarget {
       subPixelCells[index * 6 + 4] = cell.BOffsetX;
       subPixelCells[index * 6 + 5] = cell.BOffsetY;
     });
-    console.log({ subPixelCells });
     return subPixelCells;
   }
 }
@@ -7664,13 +7689,11 @@ async function LookingGlassMediaController() {
     if (cfg.appCanvas != null) {
       try {
         cfg.capturing = true;
-        console.timeLog("LookingGlass", "Capturing screenshot");
         await new Promise((resolve) => {
           requestAnimationFrame(resolve);
         });
-        console.timeLog("LookingGlass", "Screenshot captured");
-        cfg.appCanvas.width = cfg.quiltResolution;
-        cfg.appCanvas.height = cfg.quiltResolution;
+        cfg.appCanvas.width = cfg.quiltResolution.width;
+        cfg.appCanvas.height = cfg.quiltResolution.height;
         let url = cfg.appCanvas.toDataURL();
         const a = document.createElement("a");
         a.style.display = "none";
@@ -7887,7 +7910,7 @@ function initLookingGlassControlGUI() {
       fixRange: (v) => Math.max(0, Math.min(v, 2)),
       stringify: (v) => v === 0 ? "old, studio style" : v === 1 ? "2 view" : v === 2 ? "gaussian" : v === 3 ? "10 view gaussian" : "?"
     });
-    addControl("gaussianSigma", { type: "range", min: -1, max: 1, step: 0.02 }, {
+    addControl("gaussianSigma", { type: "range", min: -1, max: 1, step: 0.01 }, {
       label: "gaussian sigma",
       title: "control view blending",
       fixRange: (v) => Math.max(-1, Math.min(v, 1)),
@@ -8043,7 +8066,6 @@ const moveCanvasToWindow = (enabled, onbeforeunload) => {
     cfg.lkgCanvas.height = cfg.calibration.screenH.value;
     document.body.appendChild(controls);
     const screenManagement = "getScreenDetails" in window;
-    console.log(screenManagement, "Screen placement API exists");
     if (screenManagement) {
       placeWindow(cfg.lkgCanvas, cfg, onbeforeunload);
     } else {
@@ -8053,9 +8075,7 @@ const moveCanvasToWindow = (enabled, onbeforeunload) => {
 };
 async function placeWindow(lkgCanvas, config, onbeforeunload) {
   const screenDetails = await window.getScreenDetails();
-  console.log(screenDetails);
   const LKG = screenDetails.screens.filter((screen2) => screen2.label.includes("LKG"))[0];
-  console.log(LKG, "monitors");
   if (LKG === void 0) {
     console.log("no Looking Glass monitor detected - manually opening popup window");
     openPopup(config, lkgCanvas, onbeforeunload);

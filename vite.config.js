@@ -2,6 +2,8 @@ import replace from "@rollup/plugin-replace"
 import typescript from "@rollup/plugin-typescript"
 import path, { resolve } from "path"
 import { typescriptPaths } from "rollup-plugin-typescript-paths"
+import license from "rollup-plugin-license"
+
 import { defineConfig } from "vite"
 const plugins = [
 	typescriptPaths({
@@ -44,6 +46,12 @@ export default defineConfig(({ mode }) => {
 						replace({
 							"process.env.NODE_ENV": JSON.stringify("production"),
 						}),
+						license({
+							thirdParty: {
+							  output: path.join(__dirname, 'dist/bundle/webxr', 'dependencies.txt'),
+							  includePrivate: true, // Default is false.
+							},
+						  })
 					],
 				},
 			},

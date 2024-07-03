@@ -135,6 +135,16 @@ export declare type ViewControlArgs = {
      * The Canvas on the Looking Glass
      * @default null
      */
+    /**
+     * manual override for number of quilt columns
+     * @default null
+     */
+    columns: number | null;
+    /**
+     * @default null
+     * manual override for number of quilt rows
+     */
+    rows: number | null;
     lkgCanvas: HTMLCanvasElement | null;
     /**
      * The main webgl context
@@ -240,11 +250,15 @@ export declare class LookingGlassConfig extends EventTarget {
     set lkgCanvas(v: HTMLCanvasElement | null);
     get appCanvas(): HTMLCanvasElement | null;
     set appCanvas(v: HTMLCanvasElement | null);
+    get columns(): number | null;
+    set columns(v: number | null);
+    get rows(): number | null;
+    set rows(v: number | null);
     get aspect(): number;
     get tileWidth(): number;
     get framebufferWidth(): number;
-    get quiltWidth(): 5 | 1 | 8 | 7 | 11;
-    get quiltHeight(): 1 | 9 | 6 | 8 | 7;
+    get quiltWidth(): number;
+    get quiltHeight(): number;
     get framebufferHeight(): number;
     get viewCone(): number;
     get tilt(): number;
