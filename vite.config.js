@@ -48,7 +48,7 @@ export default defineConfig(({ mode }) => {
 						}),
 						license({
 							thirdParty: {
-							  output: path.join(__dirname, 'dist/bundle/webxr', 'dependencies.txt'),
+							  output: path.join(__dirname, 'dist/bundle', 'dependencies.txt'),
 							  includePrivate: true, // Default is false.
 							},
 						  })
