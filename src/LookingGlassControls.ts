@@ -207,7 +207,7 @@ export function initLookingGlassControlGUI() {
 
 		addControl(
 			"gaussianSigma",
-			{type: "range", min: -1, max: 1, step: 0.02},
+			{type: "range", min: -1, max: 1, step: 0.01},
 			{
 				label: "gaussian sigma",
 				title: "control view blending",
