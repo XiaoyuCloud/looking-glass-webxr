@@ -11,8 +11,8 @@ export async function LookingGlassMediaController() {
 			try {
 				cfg.capturing = true
 				await new Promise((resolve) => { requestAnimationFrame(resolve) })
-				cfg.appCanvas.width = cfg.quiltResolution
-				cfg.appCanvas.height = cfg.quiltResolution
+				cfg.appCanvas.width = cfg.quiltResolution.width
+				cfg.appCanvas.height = cfg.quiltResolution.height
 				let url = cfg.appCanvas.toDataURL()
 				const a = document.createElement("a")
 				a.style.display = "none"

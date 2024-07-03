@@ -127,7 +127,10 @@ export declare type ViewControlArgs = {
      * @default 3840
      *
      */
-    quiltResolution: number | null;
+    quiltResolution: {
+        width: number;
+        height: number;
+    } | null;
     /**
      * The Canvas on the Looking Glass
      * @default null
@@ -164,8 +167,14 @@ export declare class LookingGlassConfig extends EventTarget {
     /**
      * defines the quilt resolution, if null, it will be set based on the connected device
      */
-    get quiltResolution(): number;
-    set quiltResolution(v: number);
+    get quiltResolution(): {
+        width: number;
+        height: number;
+    };
+    set quiltResolution(v: {
+        width: number;
+        height: number;
+    });
     /**
      * defines the number of views to be rendered
      */
@@ -234,8 +243,8 @@ export declare class LookingGlassConfig extends EventTarget {
     get aspect(): number;
     get tileWidth(): number;
     get framebufferWidth(): number;
-    get quiltWidth(): 5 | 7 | 8 | 11;
-    get quiltHeight(): 9 | 6 | 7;
+    get quiltWidth(): 5 | 1 | 8 | 7 | 11;
+    get quiltHeight(): 1 | 9 | 6 | 8 | 7;
     get framebufferHeight(): number;
     get viewCone(): number;
     get tilt(): number;
