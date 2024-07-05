@@ -565,8 +565,8 @@ export class LookingGlassConfig extends EventTarget {
 
 	// number of rows
 	public get quiltHeight() {
-		if (this._viewControls.columns != null) {
-			return this._viewControls.columns
+		if (this._viewControls.rows != null) {
+			return this._viewControls.rows
 		}
 		const serial = this._calibration.serial
 		switch (true) {
@@ -583,7 +583,7 @@ export class LookingGlassConfig extends EventTarget {
 			case serial.startsWith("LKG-B"): // Looking Glass 32" Gen 2
 				return 9
 			case serial.startsWith("LKG-D"): // Looking Glass 65"
-				return 8
+				return 9
 			case serial.startsWith("LKG-F"): // Looking Glass Kiosk
 				return 6
 			case serial.startsWith("LKG-E"): // Looking Glass Go

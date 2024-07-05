@@ -298,8 +298,8 @@ class ve extends EventTarget {
     }
   }
   get quiltHeight() {
-    if (this._viewControls.columns != null)
-      return this._viewControls.columns;
+    if (this._viewControls.rows != null)
+      return this._viewControls.rows;
     const e = this._calibration.serial;
     switch (!0) {
       case e.startsWith("LKG-2K"):
@@ -315,7 +315,7 @@ class ve extends EventTarget {
       case e.startsWith("LKG-B"):
         return 9;
       case e.startsWith("LKG-D"):
-        return 8;
+        return 9;
       case e.startsWith("LKG-F"):
         return 6;
       case e.startsWith("LKG-E"):

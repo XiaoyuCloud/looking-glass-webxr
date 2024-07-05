@@ -7369,8 +7369,8 @@ class LookingGlassConfig$1 extends EventTarget {
     }
   }
   get quiltHeight() {
-    if (this._viewControls.columns != null) {
-      return this._viewControls.columns;
+    if (this._viewControls.rows != null) {
+      return this._viewControls.rows;
     }
     const serial = this._calibration.serial;
     switch (true) {
@@ -7387,7 +7387,7 @@ class LookingGlassConfig$1 extends EventTarget {
       case serial.startsWith("LKG-B"):
         return 9;
       case serial.startsWith("LKG-D"):
-        return 8;
+        return 9;
       case serial.startsWith("LKG-F"):
         return 6;
       case serial.startsWith("LKG-E"):
