@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 export declare const DefaultEyeHeight: number;
-type Value = {
+declare type Value = {
     value: number;
 };
-export type CalibrationArgs = {
+declare type SubpixelCell = {
+    BOffsetX: number;
+    BOffsetY: number;
+    GOffsetX: number;
+    GOffsetY: number;
+    ROffsetX: number;
+    ROffsetY: number;
+};
+export declare type CalibrationArgs = {
     configVersion: string;
     pitch: Value;
     slope: Value;
@@ -32,6 +40,8 @@ export type CalibrationArgs = {
     flipImageY: Value;
     flipSubp: Value;
     serial: string;
+    subpixelCells: SubpixelCell[];
+    CellPatternMode: Value;
 };
 export declare enum InlineView {
     /** Show the encoded subpixel matrix */
@@ -41,7 +51,7 @@ export declare enum InlineView {
     /** The quilt view */
     Quilt = 2
 }
-export type ViewControlArgs = {
+export declare type ViewControlArgs = {
     /**
      * @Deprecated: since 0.4.0 use `quiltResolution` instead
      * Defines the height of the individual quilt view, the width is then set based on the aspect ratio of the connected device.
@@ -117,19 +127,38 @@ export type ViewControlArgs = {
      * @default 3840
      *
      */
-    quiltResolution: number;
+    quiltResolution: {
+        width: number;
+        height: number;
+    } | null;
     /**
      * The Canvas on the Looking Glass
      * @default null
      */
+    /**
+     * manual override for number of quilt columns
+     * @default null
+     */
+    columns: number | null;
+    /**
+     * @default null
+     * manual override for number of quilt rows
+     */
+    rows: number | null;
     lkgCanvas: HTMLCanvasElement | null;
     /**
      * The main webgl context
      * @default null
      */
     appCanvas: HTMLCanvasElement | null;
+    /**subpixelMode */
+    subpixelMode: number;
+    /**filterMode */
+    filterMode: number;
+    /**gaussian sigma */
+    gaussianSigma: number;
 };
-type LookingGlassConfigEvent = "on-config-changed";
+declare type LookingGlassConfigEvent = "on-config-changed";
 export declare class LookingGlassConfig extends EventTarget {
     private _calibration;
     private _viewControls;
@@ -146,10 +175,16 @@ export declare class LookingGlassConfig extends EventTarget {
      */
     get tileHeight(): number;
     /**
-     * defines the quilt resolution, only change this at start, do not change this after an XRSession has started
+     * defines the quilt resolution, if null, it will be set based on the connected device
      */
-    get quiltResolution(): number;
-    set quiltResolution(v: number);
+    get quiltResolution(): {
+        width: number;
+        height: number;
+    };
+    set quiltResolution(v: {
+        width: number;
+        height: number;
+    });
     /**
      * defines the number of views to be rendered
      */
@@ -201,6 +236,12 @@ export declare class LookingGlassConfig extends EventTarget {
     set inlineView(v: InlineView);
     get capturing(): boolean;
     set capturing(v: boolean);
+    get subpixelMode(): number;
+    set subpixelMode(v: number);
+    get filterMode(): number;
+    set filterMode(v: number);
+    get gaussianSigma(): number;
+    set gaussianSigma(v: number);
     get popup(): Window | null;
     set popup(v: Window | null);
     get XRSession(): any;
@@ -209,17 +250,21 @@ export declare class LookingGlassConfig extends EventTarget {
     set lkgCanvas(v: HTMLCanvasElement | null);
     get appCanvas(): HTMLCanvasElement | null;
     set appCanvas(v: HTMLCanvasElement | null);
+    get columns(): number | null;
+    set columns(v: number | null);
+    get rows(): number | null;
+    set rows(v: number | null);
     get aspect(): number;
     get tileWidth(): number;
     get framebufferWidth(): number;
-    get quiltWidth(): 5 | 8;
-    get quiltHeight(): 6 | 9;
+    get quiltWidth(): number;
+    get quiltHeight(): number;
     get framebufferHeight(): number;
     get viewCone(): number;
     get tilt(): number;
-    set tilt(windowHeight: number);
     get subp(): number;
     get pitch(): number;
+    get subpixelCells(): Float32Array;
 }
 /** The global LookingGlassConfig */
 export declare function getLookingGlassConfig(): LookingGlassConfig;

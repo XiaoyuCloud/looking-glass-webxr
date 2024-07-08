@@ -6,9 +6,13 @@ export async function LookingGlassMediaController() {
 	let currentInlineView = 2 // we change this value later when the screenshot capture starts.
 
 	// the function to download the image from the canvas
-	function downloadImage() {
+	async function downloadImage() {
 		if (cfg.appCanvas != null) {
 			try {
+				cfg.capturing = true
+				await new Promise((resolve) => { requestAnimationFrame(resolve) })
+				cfg.appCanvas.width = cfg.quiltResolution.width
+				cfg.appCanvas.height = cfg.quiltResolution.height
 				let url = cfg.appCanvas.toDataURL()
 				const a = document.createElement("a")
 				a.style.display = "none"
@@ -20,9 +24,13 @@ export async function LookingGlassMediaController() {
 				window.URL.revokeObjectURL(url)
 			} catch (error) {
 				console.error("Error while capturing canvas data:", error)
+				cfg.capturing = false
 			} finally {
 				// Reset inlineView value to its initial value
 				cfg.inlineView = currentInlineView
+				cfg.capturing = false
+				cfg.appCanvas.width = cfg.calibration.screenW.value
+				cfg.appCanvas.height = cfg.calibration.screenH.value
 			}
 		}
 	}
