@@ -91,9 +91,16 @@ export default class LookingGlassXRDevice extends XRDevice {
     }
     const immersive = mode !== 'inline';
     const session = new Session(mode, enabledFeatures);
+    const cfg = getLookingGlassConfig();
     this.sessions.set(session.id, session);
     if (immersive) {
       this.dispatchEvent('@@webxr-polyfill/vr-present-start', session.id);
+
+      window.addEventListener("unload", () => {
+        if (cfg.popup) cfg.popup.close()
+        cfg.popup = null
+      })
+
     }
     return Promise.resolve(session.id);
   }
@@ -148,8 +155,8 @@ export default class LookingGlassXRDevice extends XRDevice {
           0, 0, -2 * f * n / (f - n), 0);
       }
   
-      const baseLayerPrivate = session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE];
-      baseLayerPrivate.clearFramebuffer();
+      // const baseLayerPrivate = session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE];
+      // baseLayerPrivate.clearFramebuffer();
     } else {
       const gl = session.baseLayer.context;
       const aspect = gl.drawingBufferWidth / gl.drawingBufferHeight;
@@ -191,10 +198,11 @@ export default class LookingGlassXRDevice extends XRDevice {
   endSession(sessionId) {
     const session = this.sessions.get(sessionId);
     // close the window and destroy the controls on the end of session
-    session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE].moveCanvasToWindow(false);
+    
     if (session.immersive && session.baseLayer) {
-      session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE].LookingGlassEnabled = false;
-      session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE].restoreOriginalCanvasDimensions();
+      session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE].moveCanvasToWindow(false);
+      // session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE].LookingGlassEnabled = false;
+      // session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE].restoreOriginalCanvasDimensions();
       this.dispatchEvent('@@webxr-polyfill/vr-present-end', sessionId);
     }
     session.ended = true;

@@ -47,6 +47,19 @@ export function initLookingGlassControlGUI() {
 		screenshotbutton.id = "screenshotbutton"
 		c.appendChild(screenshotbutton)
 		screenshotbutton.innerText = "Save Hologram"
+		const isDisabled = cfg.quiltResolution.height * cfg.quiltResolution.width > 33177600
+		// chrome's drawing buffer is limited to the size of an 8K monitor, so we disable the screenshot button if the quilt is too large
+		if (isDisabled) {
+			screenshotbutton.style.backgroundColor = "#ccc";
+			screenshotbutton.style.color = "#999";
+			screenshotbutton.style.cursor = "not-allowed";
+			screenshotbutton.title = "Button is disabled because the quilt resolution is too large.";
+		} else {
+			screenshotbutton.style.backgroundColor = "";
+			screenshotbutton.style.color = "";
+			screenshotbutton.style.cursor = "";
+			screenshotbutton.title = "";
+		}
 
 		const copybutton = document.createElement("button")
 		copybutton.style.display = "block"

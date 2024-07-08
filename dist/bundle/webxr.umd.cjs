@@ -7793,6 +7793,18 @@ host this content on a secure origin for the best user experience.
       screenshotbutton.id = "screenshotbutton";
       c.appendChild(screenshotbutton);
       screenshotbutton.innerText = "Save Hologram";
+      const isDisabled = cfg.quiltResolution.height * cfg.quiltResolution.width > 33177600;
+      if (isDisabled) {
+        screenshotbutton.style.backgroundColor = "#ccc";
+        screenshotbutton.style.color = "#999";
+        screenshotbutton.style.cursor = "not-allowed";
+        screenshotbutton.title = "Button is disabled because the quilt resolution is too large.";
+      } else {
+        screenshotbutton.style.backgroundColor = "";
+        screenshotbutton.style.color = "";
+        screenshotbutton.style.cursor = "";
+        screenshotbutton.title = "";
+      }
       const copybutton = document.createElement("button");
       copybutton.style.display = "block";
       copybutton.style.margin = "auto";
@@ -8441,9 +8453,15 @@ host this content on a secure origin for the best user experience.
       }
       const immersive = mode !== "inline";
       const session = new Session(mode, enabledFeatures);
+      const cfg = getLookingGlassConfig();
       this.sessions.set(session.id, session);
       if (immersive) {
         this.dispatchEvent("@@webxr-polyfill/vr-present-start", session.id);
+        window.addEventListener("unload", () => {
+          if (cfg.popup)
+            cfg.popup.close();
+          cfg.popup = null;
+        });
       }
       return Promise.resolve(session.id);
     }
@@ -8482,8 +8500,6 @@ host this content on a secure origin for the best user experience.
           const mProj = this.LookingGlassProjectionMatrices[i] = this.LookingGlassProjectionMatrices[i] || create();
           set(mProj, 2 * n / (r - l), 0, 0, 0, 0, 2 * n / (t - b), 0, 0, (r + l) / (r - l), (t + b) / (t - b), -(f + n) / (f - n), -1, 0, 0, -2 * f * n / (f - n), 0);
         }
-        const baseLayerPrivate = session.baseLayer[PRIVATE];
-        baseLayerPrivate.clearFramebuffer();
       } else {
         const gl = session.baseLayer.context;
         const aspect = gl.drawingBufferWidth / gl.drawingBufferHeight;
@@ -8517,10 +8533,8 @@ host this content on a secure origin for the best user experience.
     }
     endSession(sessionId) {
       const session = this.sessions.get(sessionId);
-      session.baseLayer[PRIVATE].moveCanvasToWindow(false);
       if (session.immersive && session.baseLayer) {
-        session.baseLayer[PRIVATE].LookingGlassEnabled = false;
-        session.baseLayer[PRIVATE].restoreOriginalCanvasDimensions();
+        session.baseLayer[PRIVATE].moveCanvasToWindow(false);
         this.dispatchEvent("@@webxr-polyfill/vr-present-end", sessionId);
       }
       session.ended = true;
