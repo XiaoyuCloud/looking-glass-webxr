@@ -201,8 +201,8 @@ export default class LookingGlassXRDevice extends XRDevice {
     
     if (session.immersive && session.baseLayer) {
       session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE].moveCanvasToWindow(false);
-      // session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE].LookingGlassEnabled = false;
-      // session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE].restoreOriginalCanvasDimensions();
+      session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE].LookingGlassEnabled = false;
+      session.baseLayer[LookingGlassXRWebGLLayer_PRIVATE].restoreOriginalCanvasDimensions();
       this.dispatchEvent('@@webxr-polyfill/vr-present-end', sessionId);
     }
     session.ended = true;

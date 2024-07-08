@@ -8535,6 +8535,8 @@ host this content on a secure origin for the best user experience.
       const session = this.sessions.get(sessionId);
       if (session.immersive && session.baseLayer) {
         session.baseLayer[PRIVATE].moveCanvasToWindow(false);
+        session.baseLayer[PRIVATE].LookingGlassEnabled = false;
+        session.baseLayer[PRIVATE].restoreOriginalCanvasDimensions();
         this.dispatchEvent("@@webxr-polyfill/vr-present-end", sessionId);
       }
       session.ended = true;
