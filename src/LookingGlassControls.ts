@@ -254,7 +254,7 @@ export function initLookingGlassControlGUI() {
 				cfg.targetX = cfg.targetX + dx * cfg.targetDiam * 0.001
 				cfg.targetY = cfg.targetY + dy * cfg.targetDiam * 0.001
 				cfg.targetZ = cfg.targetZ + dz * cfg.targetDiam * 0.001
-			} else if (ev.buttons & 1) {
+			} else {
 				cfg.trackballX = cfg.trackballX - mx * 0.01
 				cfg.trackballY = cfg.trackballY - my * 0.01
 			}
@@ -315,7 +315,7 @@ export function initLookingGlassControlGUI() {
 				cfg.targetX = cfg.targetX + dx * cfg.targetDiam * 0.001
 				cfg.targetY = cfg.targetY + dy * cfg.targetDiam * 0.001
 				cfg.targetZ = cfg.targetZ + dz * cfg.targetDiam * 0.001
-			} else if (ev.buttons & 1) {
+			} else {
 				cfg.trackballX = cfg.trackballX - mx * 0.01
 				cfg.trackballY = cfg.trackballY - my * 0.01
 			}
