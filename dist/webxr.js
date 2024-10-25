@@ -492,7 +492,7 @@ function ge() {
       return t.targetDiam = Math.pow(l, h + a.deltaY * 0.01);
     }, { passive: !1 }), t.lkgCanvas.addEventListener("mousemove", (a) => {
       const r = a.movementX, l = -a.movementY;
-      if (a.buttons & 2 || a.buttons & 1 && (a.shiftKey || a.ctrlKey)) {
+      if (a.buttons & 1 && (a.shiftKey || a.ctrlKey)) {
         const h = t.trackballX, m = t.trackballY, C = -Math.cos(h) * r + Math.sin(h) * Math.sin(m) * l, M = -Math.cos(m) * l, L = Math.sin(h) * r + Math.cos(h) * Math.sin(m) * l;
         t.targetX = t.targetX + C * t.targetDiam * 1e-3, t.targetY = t.targetY + M * t.targetDiam * 1e-3, t.targetZ = t.targetZ + L * t.targetDiam * 1e-3;
       } else
@@ -534,7 +534,7 @@ function ge() {
       return t.targetDiam = Math.pow(l, h + a.deltaY * 0.01);
     }, { passive: !1 }), (n = t.appCanvas) == null || n.addEventListener("mousemove", (a) => {
       const r = a.movementX, l = -a.movementY;
-      if (a.buttons & 2 || a.buttons & 1 && (a.shiftKey || a.ctrlKey)) {
+      if (a.buttons & 1 && (a.shiftKey || a.ctrlKey)) {
         const h = t.trackballX, m = t.trackballY, C = -Math.cos(h) * r + Math.sin(h) * Math.sin(m) * l, M = -Math.cos(m) * l, L = Math.sin(h) * r + Math.cos(h) * Math.sin(m) * l;
         t.targetX = t.targetX + C * t.targetDiam * 1e-3, t.targetY = t.targetY + M * t.targetDiam * 1e-3, t.targetZ = t.targetZ + L * t.targetDiam * 1e-3;
       } else

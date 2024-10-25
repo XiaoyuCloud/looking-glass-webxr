@@ -245,7 +245,7 @@ export function initLookingGlassControlGUI() {
 		cfg.lkgCanvas.addEventListener("mousemove", (ev) => {
 			const mx = ev.movementX,
 				my = -ev.movementY
-			if (ev.buttons & 2 || (ev.buttons & 1 && (ev.shiftKey || ev.ctrlKey))) {
+			if ((ev.buttons & 1 && (ev.shiftKey || ev.ctrlKey))) {
 				const tx = cfg.trackballX,
 					ty = cfg.trackballY
 				const dx = -Math.cos(tx) * mx + Math.sin(tx) * Math.sin(ty) * my
@@ -306,7 +306,7 @@ export function initLookingGlassControlGUI() {
 		cfg.appCanvas?.addEventListener("mousemove", (ev) => {
 			const mx = ev.movementX,
 				my = -ev.movementY
-			if (ev.buttons & 2 || (ev.buttons & 1 && (ev.shiftKey || ev.ctrlKey))) {
+			if ( (ev.buttons & 1 && (ev.shiftKey || ev.ctrlKey))) {
 				const tx = cfg.trackballX,
 					ty = cfg.trackballY
 				const dx = -Math.cos(tx) * mx + Math.sin(tx) * Math.sin(ty) * my
