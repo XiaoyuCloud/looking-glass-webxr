@@ -18,7 +18,7 @@
   "description": "Official WebXR implementation for Looking Glass Holographic Displays.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Looking-Glass/looking-glass-webxr.git"
+    "url": "git+https://github.com/XiaoyuCloud/looking-glass-webxr.git"
   },
   "scripts": {
     "dev": "vite build --mode dev && vite --mode dev --host",
