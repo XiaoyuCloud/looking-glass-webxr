@@ -82,7 +82,7 @@ export function initLookingGlassControlGUI() {
 		help.style.color = "rgba(255,255,255,0.7)"
 		help.style.fontSize = "14px"
 		help.style.margin = "5px 0"
-		help.innerHTML = "win Click the popup and use WASD, mouse left/right drag, and scroll."
+		help.innerHTML = "Click the popup and use WASD, mouse left/right drag, and scroll."
 	
 		const controlListDiv = document.createElement("div")
 		c.appendChild(controlListDiv)
